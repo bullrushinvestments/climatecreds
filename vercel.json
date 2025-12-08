@@ -1,0 +1,161 @@
+import type { BuildCommand, EnvironmentVariables, HeaderRule, SecurityHeaders } from './types'; // Assuming custom types are defined in a separate file
+
+interface RedirectRule {
+    source: string;
+    destination: string;
+    status?: number; // Default is 301 if not specified
+}
+
+interface CacheStrategy {
+    urlPattern: string;
+    headers?: Array<{ key: string; value: string }>;
+    immutable?: boolean;
+    maxAgeSeconds?: number;
+}
+
+interface FrameworkSettings {
+    vercel?: { [key: string]: any };
+    netlify?: { [key: string]: any };
+}
+
+interface DeployConfig {
+    build: BuildCommand;
+    env: EnvironmentVariables;
+    headers: SecurityHeaders[];
+    redirects: RedirectRule[];
+    cacheStrategies: CacheStrategy[];
+    frameworkSettings: FrameworkSettings;
+}
+
+export const deployConfig: DeployConfig = {
+    build: {
+        command: 'next build',
+        output: '.next'
+    },
+    env: {
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+        NEXT_PUBLIC_STRIPE_KEY: process.env.NEXT_PUBLIC_STRIPE_KEY
+    },
+    headers: [
+        {
+            source: '/(.*)',
+            headers: [
+                { key: 'strict-transport-security', value: 'max-age=31536000; includeSubDomains; preload' },
+                { key: 'x-content-type-options', value: 'nosniff' },
+                { key: 'x-frame-options', value: 'DENY' },
+                { key: 'x-xss-protection', value: '1; mode=block' }
+            ]
+        }
+    ],
+    redirects: [
+        {
+            source: '/old-url',
+            destination: '/',
+            status: 302 // Temporary redirect
+        }
+    ],
+    cacheStrategies: [
+        {
+            urlPattern: '/api/(.*)',
+            headers: [{ key: 'Cache-Control', value: 's-maxage=1, stale-while-revalidate=60' }],
+            immutable: false,
+            maxAgeSeconds: 3600
+        },
+        {
+            urlPattern: '/static/(.*)',
+            headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000' }],
+            immutable: true
+        }
+    ],
+    frameworkSettings: {
+        vercel: {
+            buildCommand: 'next build',
+            startCommand: 'next start'
+        },
+        netlify: {
+            buildContext: 'production',
+            functions: '.vercel/functions'
+        }
+    }
+};
+
+import type { BuildCommand, EnvironmentVariables, HeaderRule, SecurityHeaders } from './types'; // Assuming custom types are defined in a separate file
+
+interface RedirectRule {
+    source: string;
+    destination: string;
+    status?: number; // Default is 301 if not specified
+}
+
+interface CacheStrategy {
+    urlPattern: string;
+    headers?: Array<{ key: string; value: string }>;
+    immutable?: boolean;
+    maxAgeSeconds?: number;
+}
+
+interface FrameworkSettings {
+    vercel?: { [key: string]: any };
+    netlify?: { [key: string]: any };
+}
+
+interface DeployConfig {
+    build: BuildCommand;
+    env: EnvironmentVariables;
+    headers: SecurityHeaders[];
+    redirects: RedirectRule[];
+    cacheStrategies: CacheStrategy[];
+    frameworkSettings: FrameworkSettings;
+}
+
+export const deployConfig: DeployConfig = {
+    build: {
+        command: 'next build',
+        output: '.next'
+    },
+    env: {
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+        NEXT_PUBLIC_STRIPE_KEY: process.env.NEXT_PUBLIC_STRIPE_KEY
+    },
+    headers: [
+        {
+            source: '/(.*)',
+            headers: [
+                { key: 'strict-transport-security', value: 'max-age=31536000; includeSubDomains; preload' },
+                { key: 'x-content-type-options', value: 'nosniff' },
+                { key: 'x-frame-options', value: 'DENY' },
+                { key: 'x-xss-protection', value: '1; mode=block' }
+            ]
+        }
+    ],
+    redirects: [
+        {
+            source: '/old-url',
+            destination: '/',
+            status: 302 // Temporary redirect
+        }
+    ],
+    cacheStrategies: [
+        {
+            urlPattern: '/api/(.*)',
+            headers: [{ key: 'Cache-Control', value: 's-maxage=1, stale-while-revalidate=60' }],
+            immutable: false,
+            maxAgeSeconds: 3600
+        },
+        {
+            urlPattern: '/static/(.*)',
+            headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000' }],
+            immutable: true
+        }
+    ],
+    frameworkSettings: {
+        vercel: {
+            buildCommand: 'next build',
+            startCommand: 'next start'
+        },
+        netlify: {
+            buildContext: 'production',
+            functions: '.vercel/functions'
+        }
+    }
+};
